@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { validEmail, validPassword } from "./regex.js";
 
 const App = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
   const [newUser, setNewUser] = useState({
     name: "",
     age: "",
@@ -19,6 +21,7 @@ const App = () => {
     is_active: true,
     registered_at: new Date().toLocaleDateString(),
   });
+
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
@@ -54,11 +57,13 @@ const App = () => {
   const handleEdit = (user) => {
     setNewUser(user);
     setEditingId(user.id);
+    setShowModal(true);
   };
 
   const handleUpdateUser = () => {
     setData(data.map((user) => (user.id === editingId ? newUser : user)));
     setEditingId(null);
+    setShowModal(false);
     resetForm();
   };
 
@@ -84,7 +89,7 @@ const App = () => {
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4 text-center">User Data Table (CRUD)</h2>
+      <h2 className="mb-4 text-center">User Data Table (CRUD with Modal)</h2>
 
       <Form.Group className="mb-4">
         <Form.Control
@@ -96,7 +101,7 @@ const App = () => {
       </Form.Group>
 
       <Form className="mb-4">
-        <h5 className="mb-3">{editingId ? "Edit User" : "Add New User"}</h5>
+        <h5 className="mb-3">Add New User</h5>
         <div className="row g-2">
           <div className="col-md-3">
             <Form.Control
@@ -135,11 +140,8 @@ const App = () => {
             />
           </div>
           <div className="col-md-2 d-grid">
-            <Button
-              variant={editingId ? "warning" : "success"}
-              onClick={editingId ? handleUpdateUser : handleAddUser}
-            >
-              {editingId ? "Update" : "Add"}
+            <Button variant="success" onClick={handleAddUser}>
+              Add
             </Button>
           </div>
           <div className="col-md-3">
@@ -233,6 +235,78 @@ const App = () => {
           )}
         </tbody>
       </Table>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-2">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={newUser.name}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={newUser.email}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Phone</Form.Label>
+              <Form.Control
+                type="text"
+                name="phone"
+                value={newUser.phone}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Location</Form.Label>
+              <Form.Control
+                type="text"
+                name="location"
+                value={newUser.location}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Occupation</Form.Label>
+              <Form.Control
+                type="text"
+                name="occupation"
+                value={newUser.occupation}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Gender</Form.Label>
+              <Form.Control
+                type="text"
+                name="gender"
+                value={newUser.gender}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleUpdateUser}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
